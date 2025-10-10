@@ -1,11 +1,141 @@
 ---
-title: "cloudflare加速"
-slug: cloudflare加速
-date: 2025-10-08
-description: "cloudflare加速"
+title: "clodflare加速"
+slug: clodflare加速
+date: 2025-10-10
+description: "Cloudflare另类自选IP实现方式(无需信用卡)"
 tags: ["cloudflare"]
 ---
 
-主要是分享别人博客上的文章，觉得挺好的
+#Cloudflare另类自选IP实现方式(无需信用卡)
 
-[博客](https://blog.mmoe.work/special-cf-acceleration/)
+![cloudflare](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010212420.png)
+
+## 注意
+
+在loc有用户反馈，公共cname可能会将搜索引擎蜘蛛线路解析到其他服务器来劫持蜘蛛。
+
+在nodeseek有用户反馈，非CF官方反代IP有篡改增加违法违规网页的情况，会因为违规导致域名被禁用。
+
+
+
+请自行承担此类风险。
+
+## 前言
+
+我们的老朋友Cloudflare作为世界上为数不多的愿意向用户提供免费CDN的内容交付网络平台，一直是个人站长使用CDN防护（减速）、缓存加速、静态网页托管与边缘云计算的首选）。对于它的创新式使用（白嫖）也一直是大家津津乐道的话题。
+
+
+
+由于众所周知的原因，Cloudflare的边缘节点虽然在非大陆地区访问速度很快，但在大陆的网络环境之下连通性与速度就一言难尽了。网上也有一些广为流传的Cloudflare自选节点IP以加速访问的方法，如Cloudflare Partners与SaaS（贴一篇文章CloudFlare for SaaS 官方免费CNAME接入/自定义节点（CF自选IP）教程）。但它们一个已经成为历史，一个麻烦且需要多个域名与信用卡验证，并不方便。本文为大家分享一种基于Cloudflare Workers的另类且轻量化的Cloudflare自选IP方式。
+
+## 原理
+
+**cdn**
+
+![cdn](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010211150.png)
+
+**workers反向代理**
+
+![反向代理](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/13eb38d904d6d40a47d744ee80be61de.png)
+
+因为cloudflare是支持**指定的边缘节点**的，所以我们可以指定对中国大陆有好的节点进行先回应
+
+## 优缺点
+
+**默认cdn**
+
+优点：每日无限次访问，有安全防护，防止DDOS
+
+缺点：中国大陆访问慢
+
+**workers反向代理**
+
+优点：中国大陆访问速度快
+
+缺点：免费版每日100000次访问，无安全防护
+
+## 准备工作
+
+当然是cf账号，还有一个绑定到Cloudflare的域名。
+
+
+
+在本文中，这个服务原本的主机名称为a.com，你实际上想要暴露的域名称为b.com
+
+b.com需要托管在cloudflare进行解析
+
+## 操作
+
+**创建workers**
+
+进入Cloudflare控制台，来到”Workers与Pages”，点击”创建应用程序”
+
+![workers](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010212208.png)
+
+创建一个”Hello World”Worker并取名保存，代码不用管（一会可以改）
+
+![1](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010214735.png)
+
+然后”编辑代码”，向其中填入以下内容并点击部署：
+
+```
+
+export default {
+
+    async fetch(request, env) {
+
+      let url = new URL(request.url);
+
+      if (url.pathname.startsWith('/')) {
+
+        url.hostname="a.com"; /*改为你需要加速的主机名A（非Cloudlfare服务的域名也可以）*/
+
+        let new_request=new Request(url,request);
+
+        return fetch(new_request);
+
+      }
+
+      return env.ASSETS.fetch(request);
+
+    }
+
+  };
+
+
+
+```
+
+这个其实就是一个反向代理的代码
+
+![代码](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010215127.png)
+
+**绑定路由**
+
+这里就到了指定节点的步骤了
+
+账户主页中选择你的域名->workers路由->添加路由
+
+![路由](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010215552.png)
+
+![1](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010215719.png)
+
+路由填你的域名/* 
+
+worker选择刚刚建的worker的名称
+
+**添加DNS记录**
+
+在对应的域面板的DNS记录设置里添加一条CNAME记录，比如我在用的”*.cloudflare.182682.xyz”，这是一个使用泛域名解析的cname，可以使用任意前缀，更多优选域名参见这篇文章[CloudFlare优选Cname域名](https://www.wetest.vip/page/cloudflare/cname.html)
+
+![1](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010220152.png)
+
+**速度**
+
+在没有用上这奇技淫巧之前，我的Alist的cf代理下载文件只有几十kb的速度，使用后直接跑满我家宽带，效果还是很可观的。
+
+## 参考文章
+
+参考文章作者: Adogecheems
+
+参考文章链接: https://blog.mmoe.work/special-cf-acceleration/
