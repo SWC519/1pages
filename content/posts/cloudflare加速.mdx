@@ -8,7 +8,7 @@ tags: ["cloudflare"]
 
 #Cloudflare另类自选IP实现方式(无需信用卡)
 
-![cloudflare](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010212420.png)
+![cloudflare](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010212420.png)
 
 ## 注意
 
@@ -32,11 +32,11 @@ tags: ["cloudflare"]
 
 **cdn**
 
-![cdn](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010211150.png)
+![cdn](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010211150.png)
 
 **workers反向代理**
 
-![反向代理](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/13eb38d904d6d40a47d744ee80be61de.png)
+![反向代理](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/13eb38d904d6d40a47d744ee80be61de.png)
 
 因为cloudflare是支持**指定的边缘节点**的，所以我们可以指定对中国大陆有好的节点进行先回应
 
@@ -70,11 +70,11 @@ b.com需要托管在cloudflare进行解析
 
 进入Cloudflare控制台，来到”Workers与Pages”，点击”创建应用程序”
 
-![workers](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010212208.png)
+![workers](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010212208.png)
 
 创建一个”Hello World”Worker并取名保存，代码不用管（一会可以改）
 
-![1](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010214735.png)
+![1](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010214735.png)
 
 然后”编辑代码”，向其中填入以下内容并点击部署：
 
@@ -108,7 +108,7 @@ export default {
 
 这个其实就是一个反向代理的代码
 
-![代码](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010215127.png)
+![代码](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010215127.png)
 
 **绑定路由**
 
@@ -116,9 +116,9 @@ export default {
 
 账户主页中选择你的域名->workers路由->添加路由
 
-![路由](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010215552.png)
+![路由](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010215552.png)
 
-![1](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010215719.png)
+![1](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010215719.png)
 
 路由填你的域名/* 
 
@@ -128,7 +128,7 @@ worker选择刚刚建的worker的名称
 
 在对应的域面板的DNS记录设置里添加一条CNAME记录，比如我在用的”*.cloudflare.182682.xyz”，这是一个使用泛域名解析的cname，可以使用任意前缀，更多优选域名参见这篇文章[CloudFlare优选Cname域名](https://www.wetest.vip/page/cloudflare/cname.html)
 
-![1](https://jsdelivr.topthink.com/gh/SWC519/blog-img@main/img/20251010220152.png)
+![1](https://cdn.jsdmirror.com/gh/SWC519/blog-img@main/img/20251010220152.png)
 
 **速度**
 
